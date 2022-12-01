@@ -1,15 +1,30 @@
+# Image processing imports
 import PIL
 from PIL import Image
 from PIL import ImageEnhance
+# Multiprocessing
+import multiprocessing
 
-image_variable_name = Image.open("test.jpg")
-image_variable_name.show()
 
-curr_bri = ImageEnhance.Brightness(image_variable_name)
-new_bri = 10
+def enhanceImage(brightnessFactor,sharpnessFactor,contrastFactor,image):
 
-# Brightness enhanced by a factor of 2.5
-img_brightened = curr_bri.enhance(new_bri)
+    currentBrightness = ImageEnhance.Brightness(image)
+    brightenedImage = currentBrightness.enhance(brightnessFactor)
 
-# shows updated image in image viewer
-img_brightened.show()
+    brightenedImage.show()
+
+    currentSharpness = ImageEnhance.Sharpness(brightenedImage)
+    sharpenedImage = currentSharpness.enhance(sharpnessFactor)
+
+    sharpenedImage.show()
+
+    currentContrast = ImageEnhance.Contrast(sharpenedImage)
+    contrastedImage = currentContrast.enhance(contrastFactor)
+
+    contrastedImage.show()
+
+
+
+if __name__ == "__main__":
+    image_variable_name = Image.open("test.jpg")
+    enhanceImage(1,100,50,image_variable_name)
