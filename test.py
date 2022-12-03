@@ -8,9 +8,10 @@ import multiprocessing
 # Operating system
 import os, os.path
 import time
+import sys
 
 
-folderLocationUnenhanced = './'
+folderLocationUnenhanced = ''
 folderLocationEnhanced = './enhancedImages'
 enhancingTime = 1
 brightnessFactor = 1
@@ -25,7 +26,7 @@ def enhanceImage(image):
     openedImage = Image.open(image)
     imageFormat = openedImage.format
 
-    print("Image format: " + imageFormat)
+    print("Image name: " + image + " saved")
 
     if imageFormat == 'GIF':
         gifDuration = openedImage.info['duration']
@@ -59,11 +60,10 @@ def enhanceImage(image):
         openedImage = openedImage.enhance(contrastFactor)
 
         #contrastedImage.save(f"{folderLocation}/{contrastedImage.filename}.{contrastedImage.format}")
-        print(imageFormat)
+
         
         #contrastedImage.show()
-        print("folderLocationUnehnacned")
-        print(folderLocationUnenhanced)
+
         openedImage.save(os.path.join(folderLocationEnhanced, image))
 
 
@@ -72,12 +72,20 @@ if __name__ == "__main__":
     # folderLocationUnenhanced,folderLocationEnhanced,enhancingTime
     # brightnessFactor, sharpnessFactor, contrastFactor
 
+    #lock = multiprocessing.Lock()
+
+    
+    #sys.stdin = open(0)
+
     folderLocationUnenhanced = input("Folder location of images:")
+    
     folderLocationEnhanced = input("Folder location of enhanced images:")
+    
     enhancingTime = float(input("Enhancing time in minutes:"))
     brightnessFactor = float(input("Brightness enhancement factor:"))
     sharpnessFactor = float(input("Sharpness enhancement factor:"))
     contrastFactor = float(input("Contrast enhancement factor:"))
+
 
     os.chmod(folderLocationUnenhanced, 755)
 
@@ -103,15 +111,13 @@ if __name__ == "__main__":
 
 
     
-    # Setup multiprocessing pool
-
-
-
     pool = multiprocessing.Pool()
-        
+            
     pool.map(enhanceImage,images)
-    
+
     pool.close()
+
+
     #pool.join()
 
     # for image in images:
@@ -124,7 +130,7 @@ if __name__ == "__main__":
 
     file = open(fileNameWithFolderName,"w")
     file.write('Number of images enhanced: ' + str(numberFiles) + '\n')
-    file.write('Folder location:' + folderLocationEnhanced)
+    file.write('Folder location: ' + folderLocationEnhanced)
 
 
     # with open(os.path.join(folderLocationEnhanced,"copied_text_file.txt", '+w')) as text:
