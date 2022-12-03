@@ -8,25 +8,16 @@ import multiprocessing
 # Operating system
 import os, os.path
 import time
-import sys
+from itertools import repeat
 
-
-folderLocationUnenhanced = ''
-folderLocationEnhanced = './enhancedImages'
-enhancingTime = 1
-brightnessFactor = 1
-sharpnessFactor = 1
-contrastFactor = 1
-
-
-def enhanceImage(image):
-
-    
+def enhanceImage(image, folderLocationEnhanced, brightnessFactor,sharpnessFactor,contrastFactor):
 
     openedImage = Image.open(image)
     imageFormat = openedImage.format
 
     print("Image name: " + image + " saved")
+
+    print('folderLocationEnhanced : ' + folderLocationEnhanced)
 
     if imageFormat == 'GIF':
         gifDuration = openedImage.info['duration']
@@ -49,33 +40,15 @@ def enhanceImage(image):
         openedImage = ImageEnhance.Brightness(openedImage)
         openedImage = openedImage.enhance(brightnessFactor)
 
-        #brightenedImage.show()
-
         openedImage = ImageEnhance.Sharpness(openedImage)
         openedImage = openedImage.enhance(sharpnessFactor)
-
-        #sharpenedImage.show()
 
         openedImage = ImageEnhance.Contrast(openedImage)
         openedImage = openedImage.enhance(contrastFactor)
 
-        #contrastedImage.save(f"{folderLocation}/{contrastedImage.filename}.{contrastedImage.format}")
-
-        
-        #contrastedImage.show()
-
         openedImage.save(os.path.join(folderLocationEnhanced, image))
 
-
-if __name__ == "__main__":
-
-    # folderLocationUnenhanced,folderLocationEnhanced,enhancingTime
-    # brightnessFactor, sharpnessFactor, contrastFactor
-
-    #lock = multiprocessing.Lock()
-
-    
-    #sys.stdin = open(0)
+def main():
 
     folderLocationUnenhanced = input("Folder location of images:")
     
@@ -86,44 +59,38 @@ if __name__ == "__main__":
     sharpnessFactor = float(input("Sharpness enhancement factor:"))
     contrastFactor = float(input("Contrast enhancement factor:"))
 
-
     os.chmod(folderLocationUnenhanced, 755)
 
     images = []
     validImagesFormat = [".jpg",".gif",".png"]
-    #validImagesFormat = ['.gif']
     for files in os.listdir(folderLocationUnenhanced):
         checkFileFormat = os.path.splitext(files)[1]
         if checkFileFormat.lower() not in validImagesFormat:
             continue
         images.append((os.path.join(folderLocationUnenhanced,files)))
-  
+
     
     print("Number of images to process: " + str(len(images)))
 
     start_time = time.time()
 
-    # sharedManager = multiprocessing.Manager()
+    #With Multiprocessing
 
-    # sharedImages = sharedManager.list(images)
-    # sharedLock = sharedManager.Semaphore(1)
-    
-
-
-    
     pool = multiprocessing.Pool()
             
-    pool.map(enhanceImage,images)
+    pool.starmap(enhanceImage,zip(images,repeat(folderLocationEnhanced)
+    ,repeat(brightnessFactor),repeat(sharpnessFactor),repeat(contrastFactor)))
 
     pool.close()
 
+    pool.join()
 
-    #pool.join()
+    # With no multiprocessing
 
     # for image in images:
-    #     enhanceImage(image)
+    #     enhanceImage(image,folderLocationEnhanced,brightnessFactor,sharpnessFactor,contrastFactor)
 
-    st = os.listdir(folderLocationEnhanced) # your directory path
+    st = os.listdir(folderLocationEnhanced)
     numberFiles = len(st)
 
     fileNameWithFolderName = os.path.join(folderLocationEnhanced,'statistics.txt')
@@ -131,12 +98,11 @@ if __name__ == "__main__":
     file = open(fileNameWithFolderName,"w")
     file.write('Number of images enhanced: ' + str(numberFiles) + '\n')
     file.write('Folder location: ' + folderLocationEnhanced)
+    file.write('\n' + 'Processing time: ' + str(format(time.time() - start_time)))
 
-
-    # with open(os.path.join(folderLocationEnhanced,"copied_text_file.txt", '+w')) as text:
-    #     text.write(numberFiles)
-    #     text.write(folderLocationUnenhanced)
-
-    
     print('Processing time standard: {0} [sec]'.format(time.time() - start_time))
+
+if __name__ == "__main__":
+    main()
+    
 
