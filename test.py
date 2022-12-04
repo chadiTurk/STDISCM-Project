@@ -15,10 +15,6 @@ def enhanceImage(image, folderLocationEnhanced, brightnessFactor,sharpnessFactor
     openedImage = Image.open(image)
     imageFormat = openedImage.format
 
-    print("Image name: " + image + " saved")
-
-    print('folderLocationEnhanced : ' + folderLocationEnhanced)
-
     if imageFormat == 'GIF':
         gifDuration = openedImage.info['duration']
 
@@ -47,6 +43,8 @@ def enhanceImage(image, folderLocationEnhanced, brightnessFactor,sharpnessFactor
         openedImage = openedImage.enhance(contrastFactor)
 
         openedImage.save(os.path.join(folderLocationEnhanced, image))
+    
+    print("Image name: " + image + " saved")
 
 def main():
 
