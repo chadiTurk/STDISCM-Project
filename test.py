@@ -17,6 +17,7 @@ def enhanceImage(image, folderLocationEnhanced, brightnessFactor,sharpnessFactor
     imageFormat = openedImage.format
     image = os.path.basename(image)
 
+
     if imageFormat == 'GIF':
         gifDuration = openedImage.info['duration']
 
@@ -71,7 +72,7 @@ def main():
             images.append((os.path.join(folderLocationUnenhanced,files)))
         else:
             images.append((os.path.join(folderLocationUnenhanced,files)).replace('\\','/'))
-
+    print(images)
     print("Number of images to process: " + str(len(images)))
 
     start_time = time.time()
