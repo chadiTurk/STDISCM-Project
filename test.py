@@ -12,8 +12,10 @@ from itertools import repeat
 
 def enhanceImage(image, folderLocationEnhanced, brightnessFactor,sharpnessFactor,contrastFactor):
 
+    
     openedImage = Image.open(image)
     imageFormat = openedImage.format
+    image = os.path.basename(image)
 
     if imageFormat == 'GIF':
         gifDuration = openedImage.info['duration']
@@ -65,15 +67,17 @@ def main():
         checkFileFormat = os.path.splitext(files)[1]
         if checkFileFormat.lower() not in validImagesFormat:
             continue
-        images.append((os.path.join(folderLocationUnenhanced,files)))
+        if folderLocationUnenhanced =='./':
+            images.append((os.path.join(folderLocationUnenhanced,files)))
+        else:
+            images.append((os.path.join(folderLocationUnenhanced,files)).replace('\\','/'))
 
-    
     print("Number of images to process: " + str(len(images)))
 
     start_time = time.time()
 
     #With Multiprocessing
-
+    
     pool = multiprocessing.Pool()
             
     pool.starmap(enhanceImage,zip(images,repeat(folderLocationEnhanced)
